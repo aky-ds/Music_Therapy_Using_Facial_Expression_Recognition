@@ -1,0 +1,1 @@
+# This project is about Musical_therapy using Facial expression recognition. It includes a trained CNN model and streamlit application for deployment.
