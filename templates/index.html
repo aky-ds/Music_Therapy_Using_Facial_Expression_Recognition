@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Musical Therapy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('/static/img.jpg'); /* Path to the image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .container {
+            margin: 50px auto;
+            max-width: 600px;
+            padding: 20px;
+            background-color: rgba(15, 18, 211, 0.169); /* Green background for container */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.683);
+            border-radius: 15px;
+            backdrop-filter: blur(8px); /* Adds a glass effect */
+            position: relative; /* Necessary for positioning child elements */
+        }
+
+        .right-side-image {
+            position: absolute;
+            right: 20px; /* Adjust distance from the right edge */
+            top: 50%; /* Vertically center the image */
+            transform: translateY(-50%); /* Center alignment */
+            width: 200px; /* Set image width */
+            height: 200px; /* Maintain aspect ratio */
+            border-radius: 10px; /* Optional: Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding-bottom: 70px; /* Optional: Add a shadow */
+        }
+
+        h1 {
+            color: #e30926f6;
+            margin: 0 0 20px; /* Add space below the heading */
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Musical Therapy Using Facial Expression Recognition</h1>
+        
+        <!-- Upload Image Form -->
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="file">Upload an Image for Prediction:</label>
+            <input type="file" id="file" name="file" accept="image/*">
+            <button type="submit">Predict the Emotion</button>
+        </form>
+
+        <!-- Start/Stop Camera Buttons -->
+        <button id="startCameraButton" onclick="startCamera()">WebCam Live Detection</button>
+        <button id="stopCameraButton" onclick="stopCamera()" style="display:none;">Stop Webcam</button>
+
+        <!-- Video Feed -->
+        <div id="videoContainer">
+            <img id="videoFeed" style="display:none" />
+        </div>
+
+        <!-- Right Side Image -->
+        <img src="/static/rr.png" alt="Right Side" class="right-side-image">
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Upload Image
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const fileInput = document.getElementById('file');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('result').innerText = `Detected Emotion: ${result.emotion}`;
+        });
+
+        // Start Camera
+        function startCamera() {
+            const videoFeed = document.getElementById("videoFeed");
+            videoFeed.style.display = "block";  // Show video feed
+
+            // Set the source to the live video stream
+            videoFeed.src = "/video_feed";
+            
+            // Hide the Start button and show the Stop button
+            document.getElementById("startCameraButton").style.display = "none";
+            document.getElementById("stopCameraButton").style.display = "block";
+        }
+
+        // Stop Camera
+        function stopCamera() {
+            const videoFeed = document.getElementById("videoFeed");
+            videoFeed.style.display = "none";  // Hide video feed
+
+            // Stop the video stream
+            videoFeed.src = "";
+
+            // Hide the Stop button and show the Start button
+            document.getElementById("startCameraButton").style.display = "block";
+            document.getElementById("stopCameraButton").style.display = "none";
+        }
+    </script>
+</body>
+</html>
